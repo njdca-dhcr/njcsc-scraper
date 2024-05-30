@@ -20,7 +20,7 @@ jobs:
 
     - name: Install R packages
       run: |
-        install.packages(c('RSelenium', 'rvest', 'tidyverse', 'xml2', 'lubridate'), repos='http://cran.rstudio.com/')
+        Rscript -e 'install.packages(c('RSelenium', 'rvest', 'tidyverse', 'xml2', 'lubridate'), repos='http://cran.rstudio.com/')'
 
     - name: Run scrape script
       run: |
