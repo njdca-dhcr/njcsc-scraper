@@ -14,6 +14,9 @@ remDr <- rD$client
 initial_url <- "https://info.csc.state.nj.us/EligibleLists/Category_List.aspx?VarCat=S&VarPromo=O"
 remDr$navigate(initial_url)
 
+# Define the path to the CSV file
+csv_file <- "CSC Entry Level List.csv"
+
 # Function to extract table from the current page and clean the data
 extract_table <- function(remDr) {
   page_source <- remDr$getPageSource()[[1]]
@@ -58,10 +61,25 @@ combined_table <- bind_rows(all_tables) %>%
          Promulgation.Date = mdy(Promulgation.Date),
          Expiration.Date = mdy(Expiration.Date))
 
-# Print the combined table
-print(combined_table)
+# Check if the CSV file exists and read it if it does
+if (file.exists(csv_file)) {
+  previous_table <- read_csv(csv_file)
+  # Remove the As.Of column from the previous table
+  previous_table <- previous_table %>% select(-As.Of)
+} else {
+  previous_table <- NULL
+}
 
-write_csv(combined_table,"CSC Entry Level List.csv")
+# Remove the As.Of column from the current table
+current_table <- combined_table %>% select(-As.Of)
+
+# Compare the current table with the previous table
+if (is.null(previous_table) || !all_equal(previous_table, current_table)) {
+  write_csv(combined_table, csv_file)
+  message("CSV file has been updated.")
+} else {
+  message("No changes detected, CSV file remains unchanged.")
+}
 
 # Close RSelenium
 remDr$close()
