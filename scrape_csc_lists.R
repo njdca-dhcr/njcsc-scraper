@@ -74,7 +74,8 @@ if (file.exists(csv_file)) {
 current_table <- combined_table %>% select(-As.Of)
 
 # Compare the current table with the previous table
-if (is.null(previous_table) || !all_equal(previous_table, current_table)) {
+# TODO:fix the error from the call to all.equal, replaced this with the call to all_equal and it's erroring
+if (is.null(previous_table) || !all.equal(previous_table, current_table)) {
   write_csv(combined_table, csv_file)
   message("CSV file has been updated.")
 } else {
